@@ -2,17 +2,15 @@ from setuptools import setup, find_packages
 # from setuptools.extension import Extension
 # from distutils.core import setup
 # from distutils.extension import Extension
-# from Cython.Build import cythonize
+from Cython.Build import cythonize
 
 description = (
     "A multiphysics fire detection satellite model originally "
     "described in Wertz 'Space Mission Analysis and Design', 1999"
 )
 
-# ext = [
-#     cythonize(['firesat/sgp4lib.pyx'],
-#               language_level = 3)
-# ]
+ext = cythonize(['firesat/_sgp4.pyx'], language_level = 3)
+
 
 # ext = [Extension('sgp4lib',
 #                 sources=['firesat/sgp4lib.pyx', 'firesat/SGP4.cpp'],
@@ -38,5 +36,5 @@ setup(
         'nose'
     ],
     zip_safe=False,
-    # ext_modules=ext,
+    ext_modules=ext,
 )

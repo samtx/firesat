@@ -1,6 +1,6 @@
 import numpy as np
 from firesat import sgp4, solar, timefn
-
+import firesat.constants as cst
 
 def orbit(x, var_info, fidelity=0):
     """Calculate the orbit of the satellite based on the height.
@@ -61,6 +61,7 @@ def orbit(x, var_info, fidelity=0):
         no = np.sqrt(mu / ((RE + H) ** 3)) * 60
         # propagate using sgp4
         t = np.linspace(0, 1440, 1441)
+        tsize = t.size
         satrec = sgp4.Satellite()
         v_all = np.empty(n)
         dt_orbit_all = np.empty(n)
@@ -112,13 +113,14 @@ def orbit(x, var_info, fidelity=0):
                 idx1, idx2 = idx[j], idx[j+1]
                 vis = solar.is_sat_illuminated(r[idx1:idx2], rsun[idx1:idx2])
                 ecl[j] = 1 - np.sum(vis.astype(int))/(idx2 - idx1)
-            dt_eclipse_all[i] = np.mean(ecl)
+            dt_eclipse_all[i] = np.mean(ecl) * dt_orbit_avg
 
             # compute slewing angle
             rnorm = np.linalg.norm(r, axis=1)
-            H_i = rnorm - Re  # altitude at time t
-            theta_slew = arctan(sin(phi / RE) / (1 - cos(phi / RE) + H_i / RE))
+            H_i = rnorm*1000 - RE  # altitude at time t
+            theta_slew = np.arctan(np.sin(phi[i] / RE) / (1 - np.cos(phi[i] / RE) + H_i / RE))
             theta_slew_all[i] = np.mean(theta_slew)
+            # print(f'i = {i}')
         v = v_all
         dt_orbit = dt_orbit_all
         dt_eclipse = dt_eclipse_all

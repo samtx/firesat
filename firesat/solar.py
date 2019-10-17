@@ -21,9 +21,11 @@ def sun_sat_angle(rsat, rsun):
     rsun = np.atleast_2d(rsun)
     n = rsat.shape[0]
     sinzeta = np.empty(n)
-    for i in range(n):
-        crosspdt = np.cross(rsun[i], rsat[i])
-        sinzeta[i] = norm(crosspdt)/(norm(rsun[i])*norm(rsat[i]))
+    # for i in range(n):
+    #     crosspdt = np.cross(rsun[i], rsat[i])
+    #     sinzeta[i] = norm(crosspdt)/(norm(rsun[i])*norm(rsat[i]))
+    crosspdt = np.cross(rsun, rsat, axis=1)
+    sinzeta = norm(crosspdt, axis=1)/(norm(rsun, axis=1)*norm(rsat,axis=1))
     return np.arcsin(sinzeta)
 
 

@@ -91,15 +91,34 @@ def attitude(x=None, y=None, var_info=None, **kwargs):
         I_min = kwargs.get("I_min", var_info["I_min"])
 
     # Compute output quantitites
-    tau_slew = 4 * theta_slew / (dt_slew) ** 2 * I_max
-    tau_g = 3 * mu / (2 * ((RE + H) ** 3)) * abs(I_max - I_min) * np.sin(2 * theta)
-    tau_sp = L_sp * F_s / c * A_s * (1 + q) * np.cos(sun_i)
-    tau_m = 2 * M * RD / ((RE + H) ** 3)
-    tau_a = 0.5 * L_a * rho * C_d * A * v ** 2
-    tau_dist = np.sqrt(tau_g ** 2 + tau_sp ** 2 + tau_m ** 2 + tau_a ** 2)
-    tau_tot = np.maximum(tau_slew, tau_dist)
-    # tau_tot    = tau_slew + tau_dist
-    PACS = tau_tot * omega_max + n * P_hold
+
+    if fidelity == 0:
+        # Low fidelity computation
+        tau_slew = 4 * theta_slew / (dt_slew) ** 2 * I_max
+        tau_g = 3 * mu / (2 * ((RE + H) ** 3)) * abs(I_max - I_min) * np.sin(2 * theta)
+        tau_sp = L_sp * F_s / c * A_s * (1 + q) * np.cos(sun_i)
+        tau_m = 2 * M * RD / ((RE + H) ** 3)
+        tau_a = 0.5 * L_a * rho * C_d * A * v ** 2
+        tau_dist = np.sqrt(tau_g ** 2 + tau_sp ** 2 + tau_m ** 2 + tau_a ** 2)
+        tau_tot = np.maximum(tau_slew, tau_dist)
+        # tau_tot    = tau_slew + tau_dist
+        PACS = tau_tot * omega_max + n * P_hold
+
+    if fidelity > 0:
+        # Medium fidelity computation
+        tau_slew = 4 * theta_slew / (dt_slew) ** 2 * I_max
+        tau_g = 3 * mu / (2 * ((RE + H) ** 3)) * abs(I_max - I_min) * np.sin(2 * theta)
+        tau_sp = L_sp * F_s / c * A_s * (1 + q) * np.cos(sun_i)
+        tau_m = 2 * M * RD / ((RE + H) ** 3)
+
+        tau_a = 0.5 * L_a * rho * C_d * A * v ** 2
+
+
+        tau_dist = np.sqrt(tau_g ** 2 + tau_sp ** 2 + tau_m ** 2 + tau_a ** 2)
+        tau_tot = np.maximum(tau_slew, tau_dist)
+        # tau_tot    = tau_slew + tau_dist
+        PACS = tau_tot * omega_max + n * P_hold
+
 
     # Assemble Attitude Control outputs
     n = x.shape[1]  # number of samples

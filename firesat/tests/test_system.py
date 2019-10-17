@@ -1,10 +1,8 @@
-import sys, os
-p = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-sys.path.append(p)
-
 import unittest
 import numpy as np
-from firesat import system, utils, power_model
+import firesat.system as system
+import firesat.utils as utils
+from firesat import power
 
 class Test_Firesat(unittest.TestCase):
 
@@ -33,7 +31,7 @@ class Test_Firesat(unittest.TestCase):
         x = utils.mvn(input_vars, n)
         cpl_vars = ['PACS', 'dt_orbit', 'dt_eclipse']
         y = utils.uniform(cpl_vars, n)
-        qoi = power_model.power(x, y, var_info=sat_params, fidelity=fidelity)
+        qoi = power(x, y, var_info=sat_params, fidelity=fidelity)
         self.assertTrue(True)
 
 

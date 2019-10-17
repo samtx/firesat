@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def power(x, y, var_info, **kwargs):
+def power(x, y, var_info, fidelity=0, **kwargs):
     """Power model to compute the size of solar array required to power
     satellite. Takes the power requirements from the attitude model and the
     orbit and eclipse time from the orbit model. Outputs the moments of inertia
@@ -39,9 +39,6 @@ def power(x, y, var_info, **kwargs):
         q[2] = I_max
         q[3] = I_min
     """
-    fidelity = kwargs.get("fidelity", 0)
-    # usehifi = True
-
     # Setup fixed input variables
     sun_i = var_info["sun_i"]
     I_d = var_info["I_d"]

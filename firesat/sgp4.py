@@ -22,6 +22,13 @@ from numpy import cos, fabs, pi, sin, sqrt, where
 from numpy import arctan2 as atan2
 from collections import namedtuple
 
+USE_CYTHON = False
+try:
+    import firesat._sgp4
+    USE_CYTHON = True
+except ImportError:
+    pass
+
 deg2rad = pi / 180.0;
 _nan = float('NaN')
 false = (_nan, _nan, _nan)
@@ -166,10 +173,11 @@ wgs84 = EarthGravity(*getgravconst('wgs84'))
   ----------------------------------------------------------------------------*/
 """
 
-def _dpper(satrec, inclo, init, ep, inclp, nodep, argpp, mp, afspc_mode):
+def _dpper_py(satrec, inclo, init, ep, inclp, nodep, argpp, mp):
 
      # Copy satellite attributes into local variables for convenience
      # and symmetry in writing formulae.
+     afspc_mode = False
 
      e3 = satrec.e3
      ee2 = satrec.ee2
@@ -306,6 +314,11 @@ def _dpper(satrec, inclo, init, ep, inclp, nodep, argpp, mp, afspc_mode):
            argpp = xls - mp - cosip * nodep;
 
      return ep, inclp, nodep, argpp, mp
+
+if USE_CYTHON:
+    _dpper = firesat._sgp4._dpper
+else:
+    _dpper = _dpper_py
 
 """
 /*-----------------------------------------------------------------------------
@@ -1305,6 +1318,7 @@ def sgp4init(
      // the old check used 1.0 + cos(pi-1.0e-9), but then compared it to
      // 1.5 e-12, so the threshold was changed to 1.5e-12 for consistency
      """
+     afspc_mode = 0
      temp4    =   1.5e-12;
 
      #  ----------- set all near earth variables to zero ------------
@@ -1510,8 +1524,7 @@ def sgp4init(
              (satrec.ecco, satrec.inclo, satrec.nodeo, satrec.argpo, satrec.mo
               ) = _dpper(
                    satrec, inclm, satrec.init,
-                   satrec.ecco, satrec.inclo, satrec.nodeo, satrec.argpo, satrec.mo,
-                   satrec.afspc_mode
+                   satrec.ecco, satrec.inclo, satrec.nodeo, satrec.argpo, satrec.mo
                  );
 
              argpm  = 0.0;
@@ -1794,7 +1807,7 @@ def sgp4(satrec, tsince, whichconst=None):
 
          ep, xincp, nodep, argpp, mp = _dpper(
                satrec, satrec.inclo,
-               'n', ep, xincp, nodep, argpp, mp, satrec.afspc_mode
+               'n', ep, xincp, nodep, argpp, mp
              );
          if xincp < 0.0:
 
