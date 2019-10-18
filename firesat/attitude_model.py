@@ -1,4 +1,5 @@
 import numpy as np
+import firesat.atmosphere as atmos
 
 def attitude(x=None, y=None, var_info=None, **kwargs):
     """Attitude control model to compute the torques necessary to counteract
@@ -111,6 +112,8 @@ def attitude(x=None, y=None, var_info=None, **kwargs):
         tau_sp = L_sp * F_s / c * A_s * (1 + q) * np.cos(sun_i)
         tau_m = 2 * M * RD / ((RE + H) ** 3)
 
+        # use exponential atmospheric density model
+        rho = atmos.exponential_density_model(H/1000)
         tau_a = 0.5 * L_a * rho * C_d * A * v ** 2
 
 
