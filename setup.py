@@ -35,6 +35,9 @@ setup(
     tests_require=[
         'nose'
     ],
+    docs_require=[
+        'sphinx'
+    ],
     zip_safe=False,
     ext_modules=ext,
 )
