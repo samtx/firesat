@@ -1,7 +1,7 @@
 import numpy as np
 import firesat.atmosphere as atmos
 
-def attitude(x=None, y=None, var_info=None, **kwargs):
+def attitude(x=None, y=None, var_info=None, fidelity=0, **kwargs):
     """Attitude control model to compute the torques necessary to counteract
     moments on the satellite based on perturbations. Then computes the power
     required to the necessary power required to apply torque to reaction

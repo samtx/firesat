@@ -1,6 +1,6 @@
 from numpy import sqrt, sin, cos, arctan, arcsin, pi
 import numpy as np
-from firesat import orbit, attitude, power
+import firesat
 
 
 def setup():
@@ -249,7 +249,7 @@ def run(x, **kwargs):
 
     Parameters
     ----------
-    x : np.ndarray (6 or 7, n)
+    x : np.ndarray (7, n)
         Input design vars
         x[0] = H
         x[1] = phi
@@ -283,7 +283,7 @@ def run(x, **kwargs):
 
     # Compute orbit discipline
     x_orb = x[[0, 1]]
-    q_orb = orbit(x_orb, sat_params)
+    q_orb = firesat.orbit(x_orb, sat_params)
 
     if feedforward:
         # Feed-forward implementation of Fire Satellite problem
@@ -291,12 +291,12 @@ def run(x, **kwargs):
         # Compute attitude control discipline
         x_atd = np.vstack((x[[0, 3, 4, 5, 6, 7]]))  # H, F_s, L_sp, q, L_a, C_d
         y_atd = np.vstack((q_orb[[0, 1, 3]]))  # v, dt_orbit, theta_slew
-        q_atd = attitude(x_atd, y_atd, sat_params)
+        q_atd = firesat.attitude(x_atd, y_atd, sat_params)
 
         # Compute power discipline
         x_pow = x[[2, 3]]  # Po, F_s
         y_pow = np.vstack((q_atd[1], q_orb[[1, 2]]))  # PACS, dt_orbit, dt_eclipse
-        q_pow = power(x_pow, y_pow, sat_params, usehifi=usehifi)
+        q_pow = firesat.power(x_pow, y_pow, sat_params, usehifi=usehifi)
 
     else:
         # Feedback coupling not implemented yet
