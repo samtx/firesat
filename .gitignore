@@ -1,4 +1,7 @@
 
+.vscode
+.ipynb_checkpoints/
+
 # Created by https://www.gitignore.io/api/c,c++,python,fortran
 # Edit at https://www.gitignore.io/?templates=c,c++,python,fortran
 
