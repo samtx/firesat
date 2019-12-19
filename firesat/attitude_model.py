@@ -1,5 +1,6 @@
 import numpy as np
 import firesat.atmosphere as atmos
+import firesat
 
 def attitude(x=None, y=None, var_info=None, fidelity=0, **kwargs):
     """Attitude control model to compute the torques necessary to counteract
@@ -43,7 +44,7 @@ def attitude(x=None, y=None, var_info=None, fidelity=0, **kwargs):
 
     # Setup fixed input variables
     if not var_info:
-        var_info = setup()
+        var_info = firesat.setup()
 
     RE = var_info["RE"]
     mu = var_info["mu"]
